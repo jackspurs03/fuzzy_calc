@@ -10,7 +10,7 @@ if (strcmp(argv[1], "and") == 0 || strcmp(argv[1], "AND") == 0) {
     else if (strcmp(argv[1], "or") == 0 || strcmp(argv[1], "OR") == 0) {
         printf("Будет выполняться операция ИЛИ\n");
     }
-    else if (strcmp(argv[1], "no") == 0 || strcmp(argv[1], "NO") == 0) {
+    else if (strcmp(argv[1], "not") == 0 || strcmp(argv[1], "NOT") == 0) {
         printf("Будет выполняться операция НЕ\n");
     }
     else {

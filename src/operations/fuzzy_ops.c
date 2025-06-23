@@ -59,3 +59,20 @@ HashTable* OR(HashTable* tableA, HashTable* tableB) {
 
     return result;
 }
+
+// Отрицание одного множества
+HashTable* NOT(HashTable* table) {
+    HashTable* result = create_table();
+
+    // Обрабатываем первое множество
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        HashNode* node = table->buckets[i];
+        while (node != NULL) {
+            float neg_val = 1 - node->value;
+            upsert(result, node->key, neg_val);
+            node = node->next;
+        }
+    }
+
+    return result;
+}

@@ -31,7 +31,7 @@ HashTable* read_set_from_file(const char* filename) {
 }
 
 // Функция сравнения для qsort (должна быть отдельной)
-int compare_keys(const void* a, const void* b) {
+static int compare_keys(const void* a, const void* b) {
     int key1 = *(const int*)a;
     int key2 = *(const int*)b;
     return (key1 > key2) - (key1 < key2);

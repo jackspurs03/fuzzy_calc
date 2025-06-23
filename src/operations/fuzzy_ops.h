@@ -4,5 +4,6 @@
 #include "../data/hasht.h"
 
 HashTable* AND(HashTable* tableA, HashTable* tableB);
+HashTable* OR(HashTable* tableA, HashTable* tableB);
 
 #endif

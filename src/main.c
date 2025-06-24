@@ -31,11 +31,11 @@ int main(int argc, char *argv[]) {
             char output_path[256];
                 if (argc >= 6 && strcmp(argv[4], "-o") == 0) {
                     // Формируем путь с учётом переданного имени файла
-                    snprintf(output_path, sizeof(output_path), "./test/%s", argv[5]);
+                    snprintf(output_path, sizeof(output_path), "%s", argv[5]);
                 } 
                 else {
                         // Используем имя по умолчанию
-                        strcpy(output_path, "./test/result.txt");
+                        strcpy(output_path, "result.txt");
                 }
 
             write_set_to_file(result, output_path);
@@ -71,11 +71,11 @@ int main(int argc, char *argv[]) {
            char output_path[256];
                 if (argc >= 6 && strcmp(argv[4], "-o") == 0) {
                     // Формируем путь с учётом переданного имени файла
-                    snprintf(output_path, sizeof(output_path), "./test/%s", argv[5]);
+                    snprintf(output_path, sizeof(output_path), "%s", argv[5]);
                 } 
                 else {
                         // Используем имя по умолчанию
-                        strcpy(output_path, "./test/result.txt");
+                        strcpy(output_path, "result.txt");
                 }
 
                 write_set_to_file(result, output_path);
@@ -109,11 +109,11 @@ int main(int argc, char *argv[]) {
              char output_path[256];
                 if (argc >= 5 && strcmp(argv[3], "-o") == 0) {
                     // Формируем путь с учётом переданного имени файла
-                    snprintf(output_path, sizeof(output_path), "./test/%s", argv[4]);
+                    snprintf(output_path, sizeof(output_path), "%s", argv[4]);
                 } 
                 else {
                         // Используем имя по умолчанию
-                        strcpy(output_path, "./test/result.txt");
+                        strcpy(output_path, "result.txt");
                 }
                
                 write_set_to_file(result, output_path);

@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
 
     //потом вывод строки поменяем на сами операции 
     if (strcmp(argv[1], "and") == 0 || strcmp(argv[1], "AND") == 0) {
-        if (argc > 4) {
+        if (argc > 4 && strcmp(argv[5], "-o") == 0) {
             printf("Слишком много файлов");
         }
         else {
@@ -27,7 +27,18 @@ int main(int argc, char *argv[]) {
             printf("Sets loaded: A=%d elements, B=%d elements\n", setA->count, setB->count);
 
             HashTable* result = AND(setA, setB);
-            write_set_to_file(result, "./test/result.txt");
+               
+            char output_path[256];
+                if (argc >= 6 && strcmp(argv[4], "-o") == 0) {
+                    // Формируем путь с учётом переданного имени файла
+                    snprintf(output_path, sizeof(output_path), "./test/%s", argv[5]);
+                } 
+                else {
+                        // Используем имя по умолчанию
+                        strcpy(output_path, "./test/result.txt");
+                }
+
+            write_set_to_file(result, output_path);
         
             printf("Intersection completed. Result: %d elements\n", result->count);
 
@@ -39,7 +50,7 @@ int main(int argc, char *argv[]) {
         }
     }
     else if (strcmp(argv[1], "or") == 0 || strcmp(argv[1], "OR") == 0) {
-        if (argc > 4) {
+         if (argc > 4 && strcmp(argv[5], "-o") == 0) {
             printf("Слишком много файлов");
         }
         else {
@@ -56,7 +67,18 @@ int main(int argc, char *argv[]) {
             printf("Sets loaded: A=%d elements, B=%d elements\n", setA->count, setB->count);
 
             HashTable* result = OR(setA, setB);
-            write_set_to_file(result, "./test/result.txt");
+           
+           char output_path[256];
+                if (argc >= 6 && strcmp(argv[4], "-o") == 0) {
+                    // Формируем путь с учётом переданного имени файла
+                    snprintf(output_path, sizeof(output_path), "./test/%s", argv[5]);
+                } 
+                else {
+                        // Используем имя по умолчанию
+                        strcpy(output_path, "./test/result.txt");
+                }
+
+                write_set_to_file(result, output_path);
         
             printf("Union completed. Result: %d elements\n", result->count);
 
@@ -67,7 +89,7 @@ int main(int argc, char *argv[]) {
         }
     }
     else if (strcmp(argv[1], "not") == 0 || strcmp(argv[1], "NOT") == 0) {
-        if (argc > 3) 
+        if (argc > 3 && strcmp(argv[4], "-o") == 0) 
         {
             printf("Слишком большое кол-во файлов\n");
         }
@@ -83,7 +105,18 @@ int main(int argc, char *argv[]) {
             printf("Sets loaded: A=%d elements\n", setA->count);
 
             HashTable* result = NOT(setA);
-            write_set_to_file(result, "./test/result.txt");
+
+             char output_path[256];
+                if (argc >= 5 && strcmp(argv[3], "-o") == 0) {
+                    // Формируем путь с учётом переданного имени файла
+                    snprintf(output_path, sizeof(output_path), "./test/%s", argv[4]);
+                } 
+                else {
+                        // Используем имя по умолчанию
+                        strcpy(output_path, "./test/result.txt");
+                }
+               
+                write_set_to_file(result, output_path);
         
             printf("Complement completed. Result: %d elements\n", result->count);
 

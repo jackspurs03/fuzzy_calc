@@ -1,137 +1,138 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+
 #include "./data/hasht.h"
 #include "./io/file_io.h"
 #include "./operations/fuzzy_ops.h"
 
-int main(int argc, char *argv[]) {
-    system ("chcp 65001>nul");
-
-    //потом вывод строки поменяем на сами операции 
-    if (strcmp(argv[1], "and") == 0 || strcmp(argv[1], "AND") == 0) {
-        if (argc > 4 && strcmp(argv[5], "-o") == 0) {
-            printf("Слишком много файлов");
-        }
-        else {
-            HashTable* setA = read_set_from_file(argv[2]);
-            HashTable* setB = read_set_from_file(argv[3]);
-    
-            if (!setA || !setB) {
-                fprintf(stderr, "Error reading input files\n");
-                if (setA) free_table(setA);
-                if (setB) free_table(setB);
-                return 1;
-            }
-        
-            printf("Sets loaded: A=%d elements, B=%d elements\n", setA->count, setB->count);
-
-            HashTable* result = AND(setA, setB);
-               
-            char output_path[256];
-                if (argc >= 6 && strcmp(argv[4], "-o") == 0) {
-                    // Формируем путь с учётом переданного имени файла
-                    snprintf(output_path, sizeof(output_path), "%s", argv[5]);
-                } 
-                else {
-                        // Используем имя по умолчанию
-                        strcpy(output_path, "result.txt");
-                }
-
-            write_set_to_file(result, output_path);
-        
-            printf("Intersection completed. Result: %d elements\n", result->count);
-
-            // Освобождение памяти
-            free_table(setA);
-            free_table(setB);
-            free_table(result);
-
+// ========== Утилиты для аргументов ==========
+const char* get_arg_value(int argc, char* argv[], const char* flag) {
+    for (int i = 1; i < argc - 1; i++) {
+        if (strcmp(argv[i], flag) == 0) {
+            return argv[i + 1];
         }
     }
-    else if (strcmp(argv[1], "or") == 0 || strcmp(argv[1], "OR") == 0) {
-         if (argc > 4 && strcmp(argv[5], "-o") == 0) {
-            printf("Слишком много файлов");
-        }
-        else {
-             HashTable* setA = read_set_from_file(argv[2]);
-            HashTable* setB = read_set_from_file(argv[3]);
-    
-            if (!setA || !setB) {
-                fprintf(stderr, "Error reading input files\n");
-                if (setA) free_table(setA);
-                if (setB) free_table(setB);
-                return 1;
-            }
-        
-            printf("Sets loaded: A=%d elements, B=%d elements\n", setA->count, setB->count);
+    return NULL;
+}
 
-            HashTable* result = OR(setA, setB);
-           
-           char output_path[256];
-                if (argc >= 6 && strcmp(argv[4], "-o") == 0) {
-                    // Формируем путь с учётом переданного имени файла
-                    snprintf(output_path, sizeof(output_path), "%s", argv[5]);
-                } 
-                else {
-                        // Используем имя по умолчанию
-                        strcpy(output_path, "result.txt");
-                }
-
-                write_set_to_file(result, output_path);
-        
-            printf("Union completed. Result: %d elements\n", result->count);
-
-            // Освобождение памяти
-            free_table(setA);
-            free_table(setB);
-            free_table(result);
-        }
+int has_flag(int argc, char* argv[], const char* flag) {
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], flag) == 0) return 1;
     }
-    else if (strcmp(argv[1], "not") == 0 || strcmp(argv[1], "NOT") == 0) {
-        if (argc > 3 && strcmp(argv[4], "-o") == 0) 
-        {
-            printf("Слишком большое кол-во файлов\n");
-        }
-        else {
-             HashTable* setA = read_set_from_file(argv[2]);
-    
-            if (!setA) {
-                fprintf(stderr, "Error reading input files\n");
-                if (setA) free_table(setA);
-                return 1;
-            }
-        
-            printf("Sets loaded: A=%d elements\n", setA->count);
-
-            HashTable* result = NOT(setA);
-
-             char output_path[256];
-                if (argc >= 5 && strcmp(argv[3], "-o") == 0) {
-                    // Формируем путь с учётом переданного имени файла
-                    snprintf(output_path, sizeof(output_path), "%s", argv[4]);
-                } 
-                else {
-                        // Используем имя по умолчанию
-                        strcpy(output_path, "result.txt");
-                }
-               
-                write_set_to_file(result, output_path);
-        
-            printf("Complement completed. Result: %d elements\n", result->count);
-
-            // Освобождение памяти
-            free_table(setA);
-            free_table(result);
-        }
-    }
-    else {
-        printf("Введена неверная операция\n");
-    }
-
     return 0;
 }
 
+// ========== Обработчики операций ==========
+int handle_and(int argc, char* argv[]) {
+    if (argc < 4) {
+        fprintf(stderr, "Недостаточно аргументов для AND\n");
+        return 1;
+    }
 
+    HashTable* a = read_set_from_file(argv[2]);
+    HashTable* b = read_set_from_file(argv[3]);
+    if (!a || !b) {
+        fprintf(stderr, "Ошибка чтения входных файлов\n");
+        if (a) free_table(a);
+        if (b) free_table(b);
+        return 1;
+    }
 
+    HashTable* result = AND(a, b);
 
+    const char* out = get_arg_value(argc, argv, "-o");
+    if (!out) out = "result.txt";
+
+    write_set_to_file(result, out);
+
+    free_table(a);
+    free_table(b);
+    free_table(result);
+    return 0;
+}
+
+int handle_or(int argc, char* argv[]) {
+    if (argc < 4) {
+        fprintf(stderr, "Недостаточно аргументов для OR\n");
+        return 1;
+    }
+
+    HashTable* a = read_set_from_file(argv[2]);
+    HashTable* b = read_set_from_file(argv[3]);
+    if (!a || !b) {
+        fprintf(stderr, "Ошибка чтения входных файлов\n");
+        if (a) free_table(a);
+        if (b) free_table(b);
+        return 1;
+    }
+
+    HashTable* result = OR(a, b);
+
+    const char* out = get_arg_value(argc, argv, "-o");
+    if (!out) out = "result.txt";
+
+    write_set_to_file(result, out);
+
+    free_table(a);
+    free_table(b);
+    free_table(result);
+    return 0;
+}
+
+int handle_not(int argc, char* argv[]) {
+    if (argc < 3) {
+        fprintf(stderr, "Недостаточно аргументов для NOT\n");
+        return 1;
+    }
+
+    HashTable* a = read_set_from_file(argv[2]);
+    if (!a) {
+        fprintf(stderr, "Ошибка чтения входного файла\n");
+        return 1;
+    }
+
+    HashTable* result = NOT(a);
+
+    const char* out = get_arg_value(argc, argv, "-o");
+    if (!out) out = "result.txt";
+
+    write_set_to_file(result, out);
+
+    free_table(a);
+    free_table(result);
+    return 0;
+}
+
+// ========== Таблица команд ==========
+typedef struct {
+    const char* name;
+    int (*handler)(int argc, char* argv[]);
+} Command;
+
+Command commands[] = {
+    { "AND", handle_and },
+    { "OR", handle_or },
+    { "NOT", handle_not },
+    { NULL, NULL }
+};
+
+// ========== Основной main ==========
+int main(int argc, char* argv[]) {
+    system("chcp 65001>nul");
+
+    if (argc < 2) {
+        fprintf(stderr, "Ошибка: не указана команда\n");
+        return 1;
+    }
+
+    for (int i = 0; commands[i].name != NULL; i++) {
+        if (strcasecmp(argv[1], commands[i].name) == 0) {
+            return commands[i].handler(argc, argv);
+        }
+    }
+
+    fprintf(stderr, "Ошибка: неизвестная команда %s\n", argv[1]);
+    return 1;
+}

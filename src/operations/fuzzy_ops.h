@@ -3,8 +3,12 @@
 
 #include "../data/hasht.h"
 
-HashTable* AND(HashTable* tableA, HashTable* tableB);
-HashTable* OR(HashTable* tableA, HashTable* tableB);
-HashTable* NOT(HashTable* table);
+// Базовые операции
+HashTable* not(const HashTable* set);
+HashTable* and(const HashTable* a, const HashTable* b, float (*tnorm)(float, float));
+HashTable* or(const HashTable* a, const HashTable* b, float (*snorm)(float, float));
 
+// Расширенные операции
+HashTable* implication(const HashTable* a, const HashTable* b);
+HashTable* cartesian_product(const HashTable* a, const HashTable* b);
 #endif
